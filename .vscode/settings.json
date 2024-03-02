@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "dio_interface.h": "c",
+        "std_types.h": "c",
+        "ecu_lcd.h": "c"
+    },
+    "cmake.configureOnOpen": false
+}

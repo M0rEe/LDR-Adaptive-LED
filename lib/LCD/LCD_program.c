@@ -32,7 +32,7 @@ void LCD_4_bit_send_command(u8 cmd)
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
     LCD_4_BIT_Pulse();
-
+    _delay_ms(2);
     LCD_4_BIT_Shift(cmd);                                                  // write command to data pins
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
@@ -46,7 +46,7 @@ static void LCD_4_BIT_Send_DATA(u8 data)
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW);  // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_HIGH); // Select data Regsiter
     LCD_4_BIT_Pulse();
-
+    _delay_ms(2);
     LCD_4_BIT_Shift(data);                                                  // write command to data pins
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW);  // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_HIGH); // Select Instruction Regsiter
@@ -57,7 +57,7 @@ void LCD_4_bit_INIT(void)
 {
     // * pins already initialized
     /* working sequence
-
+*/
     _delay_ms(20);
     LCD_4_bit_send_command(0x02);
     _delay_ms(5);
@@ -67,7 +67,7 @@ void LCD_4_bit_INIT(void)
     _delay_ms(5);
     LCD_4_bit_send_command(0x06);
     _delay_ms(1);
-    */
+/*
     _delay_ms(20);
     LCD_4_bit_send_command(0x02);
     _delay_ms(5);
@@ -85,6 +85,9 @@ void LCD_4_bit_INIT(void)
     _delay_ms(2);
     LCD_4_bit_send_command(0x02);
     _delay_ms(2);
+*/
+    /*
+    */
     LCD_4_bit_send_command(_LCD_DDRAM_START);
     _delay_ms(5);
 }
@@ -134,7 +137,7 @@ void LCD_4_bit_Set_Cursor(u8 line, u8 col)
 
 void LCD_4_bit_Write_Custom_Char(u8 line, u8 col, u8 mempos)
 {
-    LCD_4_bit_send_command((_LCD_CGRAM_START + (mempos * 8)));
+    //LCD_4_bit_send_command((_LCD_CGRAM_START + (mempos * 8)));
     LCD_4_bit_Set_Cursor(line, col);
     LCD_4_bit_Write_Char(mempos);
 }
@@ -146,7 +149,7 @@ void LCD_4_bit_Create_Custom_Char(u8 *dataArr, u8 mempos)
     {
         LCD_4_BIT_Send_DATA(dataArr[i]);
     }
-    LCD_4_bit_send_command(_LCD_DDRAM_START);
+    //LCD_4_bit_send_command(_LCD_DDRAM_START);
 }
 
 void LCD_4_bit_Write_int(u8 num)

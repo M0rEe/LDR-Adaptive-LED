@@ -20,11 +20,11 @@ int main(void)
   LCD_4_bit_INIT();
   /* Switch 1   --> UP*/
   //DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN7, DIO_PIN_INPUT);
-  DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN7);
+  //DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN7);
 
   /* Swithc 2   -->  DOWN */
   //DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN6, DIO_PIN_INPUT);
-  DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN6);
+  //DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN6);
 
 
   u8 UPval = 1;
@@ -50,6 +50,7 @@ int main(void)
 
     if (DIO_PIN_LOW == UPval)
     { 
+      LCD_4_bit_Write_Char('U');
     }
     else
     {
@@ -57,6 +58,7 @@ int main(void)
 
     if (DIO_PIN_LOW == DOWNval)
     {
+      LCD_4_bit_Write_Char('D');
     }
     else
     {

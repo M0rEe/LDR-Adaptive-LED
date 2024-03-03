@@ -16,12 +16,17 @@ void DIO_INTI(void)
     DDRC = PORTC_DIR;
     DDRD = PORTD_DIR;
 
+    PORTA = PORTA_PULLUP;
+    PORTB = PORTB_PULLUP;
+    PORTC = PORTC_PULLUP;
+    PORTD = PORTD_PULLUP;
+
     PORTA = PORTA_VALUE;
     PORTB = PORTB_VALUE;
     PORTC = PORTC_VALUE;
     PORTD = PORTD_VALUE;
 
-    
+
 }
 /**
  * @return void

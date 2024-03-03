@@ -4,11 +4,13 @@
 #include "string.h"
 
 #if LCD_4BIT == ENABLED
-
 static inline void LCD_4_BIT_Shift(u8);
 static inline void LCD_4_BIT_Pulse();
-static void LCD_4BIT_INTIT_PINS();
 static void atoi(u8 number, u8 *arr);
+
+
+
+
 static inline void LCD_4_BIT_Pulse(void)
 {
     DIO_voidSetPinValue(LCD_4_BIT_EN_PORT, LCD_4_BIT_EN_PIN, DIO_PIN_HIGH); // Pulse Enable pin

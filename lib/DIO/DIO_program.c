@@ -2,20 +2,26 @@
 #include "DIO_interface.h"
 #include "BitMath.h"
 #include <avr/io.h>
+#include "DIO_config.h"
 
 /* Pin Apis */
 #define ENABLED 1
 #define DISABLED 0
 
 #define ERR_DETECTION DISABLED
-void DIO_INTI(void){
-    /*
-    DDRA = PORTA;
-    DDRB = ;
-    DDRC = ;
-    DDRD = ;
-    */
+void DIO_INTI(void)
+{
+    DDRA = PORTA_DIR;
+    DDRB = PORTB_DIR;
+    DDRC = PORTC_DIR;
+    DDRD = PORTD_DIR;
 
+    PORTA = PORTA_VALUE;
+    PORTB = PORTB_VALUE;
+    PORTC = PORTC_VALUE;
+    PORTD = PORTD_VALUE;
+
+    
 }
 /**
  * @return void

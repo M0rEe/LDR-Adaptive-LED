@@ -35,9 +35,9 @@
 #define _LCD_DDRAM_START                            0x80
 
 #define LINE1                                       0x80
-#define LINE2                                       0xc0
+#define LINE2                                       0xC0
 #define LINE3                                       0x94
-#define LINE4                                       0xd4
+#define LINE4                                       0xD4
 
 #if LCD_4BIT == ENABLED
 
@@ -48,7 +48,7 @@ void LCD_4_bit_Write_String_At(u8 *ptr,u8 line ,u8 col);
 void LCD_4_bit_Set_Cursor(u8 x , u8 y);
 void LCD_4_bit_Write_Custom_Char(u8 line,u8 col,u8 mempos);
 void LCD_4_bit_Create_Custom_Char(u8 *dataArr, u8 mempos);
-void LCD_4_bit_Write_int(u16);
+void LCD_4_bit_Write_int(u8);
 
 #endif
 

@@ -3,86 +3,65 @@
 #include "LCD_interface.h"
 #include <util/delay.h>
 
+u8 customChar[] = {
+    0x03,
+    0x04,
+    0x08,
+    0x08,
+    0x0C,
+    0x0A,
+    0x09,
+    0x00};
+
 int main(void)
 {
-  /* Switch */
-  DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN7, DIO_PIN_INPUT);
-  DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN7);
   DIO_INTI();
   /*LCD*/
-  /*
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN0, DIO_PIN_OUTPUT); // d0
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN1, DIO_PIN_OUTPUT); // d1
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN2, DIO_PIN_OUTPUT); // d2
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN3, DIO_PIN_OUTPUT); // d3
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN4, DIO_PIN_OUTPUT); // d4
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN5, DIO_PIN_OUTPUT); // d5
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN6, DIO_PIN_OUTPUT); // d6
-  DIO_voidSetPinDirection(DIO_PORTC, DIO_PIN7, DIO_PIN_OUTPUT); // d7
-
-  DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN4, DIO_PIN_OUTPUT); // rs
-  DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN5, DIO_PIN_OUTPUT); // rw
-
-  DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN6, DIO_PIN_OUTPUT); // en
-  */
   LCD_4_bit_INIT();
+  /* Switch 1   --> UP*/
+  //DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN7, DIO_PIN_INPUT);
+  DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN7);
 
-  u16 counter = 0; //, tempCounter;
-  u8 val = 1;
+  /* Swithc 2   -->  DOWN */
+  //DIO_voidSetPinDirection(DIO_PORTD, DIO_PIN6, DIO_PIN_INPUT);
+  DIO_voidActivePinInPullUpResistance(DIO_PORTD, DIO_PIN6);
 
-  u8 ptr[] = {
-      0B00000,
-      0B11100,
-      0B00100,
-      0B00100,
-      0B00100,
-      0B00100,
-      0B11100,
-      0B00000};
-  // SSD_Init();
-  // int ones = 0, tens = 0, hundreds = 0, thouthands = 0;
-  u8 str[] = "---Hello World---";
-  u8 str2[] = "--First Line---";
+
+  u8 UPval = 1;
+  u8 DOWNval = 1;
+
+  u8 str[] = "-+Hello World+-";
+
+
+  LCD_4_bit_Create_Custom_Char(customChar, 0);
+
+  LCD_4_bit_Write_Custom_Char(0, 0, 0);
+  LCD_4_bit_Write_String_At(str, 0, 0);
+  LCD_4_bit_Write_String_At(str, 1, 0);
+  LCD_4_bit_Write_String_At(str, 2, 0);
+  LCD_4_bit_Write_String_At(str, 3, 0);
+  LCD_4_bit_Write_Custom_Char(3,8,0);
 
   while (1)
   {
-    DIO_voidGetPinValue(DIO_PORTD, DIO_PIN7, &val);
 
-    // LCD_4_bit_Write_String_At(str, 4, 0);
+    DIO_voidGetPinValue(DIO_PORTD, DIO_PIN7, &UPval);   // getting up keypress
+    DIO_voidGetPinValue(DIO_PORTD, DIO_PIN6, &DOWNval); // getting down keypress
 
-    // LCD_4_bit_Write_Custom_Char(2, 0, 0);
-    if (DIO_PIN_LOW == val)
-    {
-      counter++;
-      // LCD_4_bit_Create_Custom_Char(ptr, 0);
-      LCD_4_bit_Create_Custom_Char(ptr, 1);
-      LCD_4_bit_Write_Custom_Char(3,5,1);
-      LCD_4_bit_Write_String_At(str, 4, 0);
-      LCD_4_bit_Write_String_At(str2, 1, 2);
-      LCD_4_bit_Set_Cursor(2,0);
-      LCD_4_bit_Write_int(256);
+    if (DIO_PIN_LOW == UPval)
+    { 
     }
     else
     {
     }
-    _delay_ms(100);
-    /*
-    tempCounter = counter;
 
-    ones = tempCounter % 10;
-    tempCounter /= 10;
-
-    tens = tempCounter % 10;
-    tempCounter /= 10;
-
-    hundreds = tempCounter % 10;
-    tempCounter /= 10;
-
-    thouthands = tempCounter % 10;
-    tempCounter /= 10;
-
-    SSD_Write_Multiple_numbers(ones, tens, hundreds, thouthands, 500);
-    */
+    if (DIO_PIN_LOW == DOWNval)
+    {
+    }
+    else
+    {
+    }
+    _delay_ms(200);
   }
 
   return 0;

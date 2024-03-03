@@ -1,6 +1,6 @@
 #ifndef __LCD_PRIVATE__
 #define __LCD_PRIVATE__
-
+/*
 #define DDRA        (*((volatile u8 *)0x17))
 #define DDRB        (*((volatile u8 *)0x17))
 #define DDRC        (*((volatile u8 *)0x17))
@@ -24,5 +24,6 @@
 #define PIN5        5
 #define PIN6        6       
 #define PIN7        7
+*/
 
 #endif //__LCD_PRIVATE__

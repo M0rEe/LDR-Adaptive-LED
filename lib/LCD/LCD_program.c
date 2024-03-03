@@ -1,31 +1,19 @@
 #include "LCD_interface.h"
 #include "DIO_interface.h"
 #include "util/delay.h"
+#include "string.h"
 
 #if LCD_4BIT == ENABLED
 
 static inline void LCD_4_BIT_Shift(u8);
 static inline void LCD_4_BIT_Pulse();
 static void LCD_4BIT_INTIT_PINS();
-
+static void atoi(u8 number, u8 *arr);
 static inline void LCD_4_BIT_Pulse(void)
 {
     DIO_voidSetPinValue(LCD_4_BIT_EN_PORT, LCD_4_BIT_EN_PIN, DIO_PIN_HIGH); // Pulse Enable pin
     _delay_us(5);
     DIO_voidSetPinValue(LCD_4_BIT_EN_PORT, LCD_4_BIT_EN_PIN, DIO_PIN_LOW); // Pulse Enable pin
-}
-
-static void LCD_4BIT_INTIT_PINS()
-{
-    DIO_voidSetPinDirection(LCD_4_BIT_D4_PORT, LCD_4_BIT_D4_PIN, DIO_PIN_OUTPUT);
-    DIO_voidSetPinDirection(LCD_4_BIT_D5_PORT, LCD_4_BIT_D5_PIN, DIO_PIN_OUTPUT);
-    DIO_voidSetPinDirection(LCD_4_BIT_D6_PORT, LCD_4_BIT_D6_PIN, DIO_PIN_OUTPUT);
-    DIO_voidSetPinDirection(LCD_4_BIT_D7_PORT, LCD_4_BIT_D7_PIN, DIO_PIN_OUTPUT);
-
-    DIO_voidSetPinDirection(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_OUTPUT); // rs
-    DIO_voidSetPinDirection(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_OUTPUT); // rw
-
-    DIO_voidSetPinDirection(LCD_4_BIT_EN_PORT, LCD_4_BIT_EN_PIN, DIO_PIN_OUTPUT); // en
 }
 
 static inline void LCD_4_BIT_Shift(u8 data)
@@ -65,31 +53,38 @@ static void LCD_4_BIT_Send_DATA(u8 data)
 
 void LCD_4_bit_INIT(void)
 {
-    LCD_4BIT_INTIT_PINS();
     // * pins already initialized
-    _delay_ms(100);
-    LCD_4_bit_send_command(_LCD_8BIT_MODE_2_LINE);
+    /* working sequence
+
+    _delay_ms(20);
+    LCD_4_bit_send_command(0x02);
     _delay_ms(5);
-
-    LCD_4_bit_send_command(_LCD_8BIT_MODE_2_LINE);
-    _delay_us(150);
-
-    LCD_4_bit_send_command(_LCD_8BIT_MODE_2_LINE);
-    _delay_us(150);
-
-    LCD_4_bit_send_command(_LCD_CLEAR);
-    _delay_us(150);
-
-    LCD_4_bit_send_command(_LCD_RETURN_HOME);
-    _delay_us(150);
-
-    LCD_4_bit_send_command(_LCD_ENTRY_MODE_INC_SHIFT_OFF);
-    _delay_us(150);
-
-    LCD_4_bit_send_command(_LCD_DISPLAY_ON_UNDERLINE_OFF_CURSOR_ON);
-    _delay_us(150);
-    LCD_4_bit_send_command(_LCD_CLEAR);
-    LCD_4_bit_Set_Cursor(1, 0);
+    LCD_4_bit_send_command(0x28);
+    _delay_ms(5);
+    LCD_4_bit_send_command(0x0D);
+    _delay_ms(5);
+    LCD_4_bit_send_command(0x06);
+    _delay_ms(1);
+    */
+    _delay_ms(20);
+    LCD_4_bit_send_command(0x02);
+    _delay_ms(5);
+    LCD_4_bit_send_command(0x02);
+    _delay_ms(5);
+    LCD_4_bit_send_command(0x02);
+    _delay_ms(5);
+    LCD_4_bit_send_command(0x28);
+    _delay_ms(2);
+    LCD_4_bit_send_command(0x0D);
+    _delay_ms(2);
+    LCD_4_bit_send_command(0x01);
+    _delay_ms(2);
+    LCD_4_bit_send_command(0x06);
+    _delay_ms(2);
+    LCD_4_bit_send_command(0x02);
+    _delay_ms(2);
+    LCD_4_bit_send_command(_LCD_DDRAM_START);
+    _delay_ms(5);
 }
 
 void LCD_4_bit_Write_Char(u8 ch)
@@ -99,21 +94,10 @@ void LCD_4_bit_Write_Char(u8 ch)
 
 void LCD_4_bit_Write_String_At(u8 *ptr, u8 line, u8 col)
 {
-    u8 *tempPtr = ptr;
-    u8 offsetX = 0, offsetY = 0;
-    while (*tempPtr != '\0')
+    LCD_4_bit_Set_Cursor(line, col);
+    while (*ptr)
     {
-        LCD_4_bit_Set_Cursor((line + offsetX), (col + offsetY));
-        LCD_4_bit_Write_Char(*tempPtr);
-        tempPtr++;
-        if (offsetY == 19)
-        {
-            offsetX = (offsetX + 1) % 5;
-        }
-        else
-        {
-        }
-        offsetY = (offsetY + 1) % 20;
+        LCD_4_bit_Write_Char(*ptr++);
     }
 }
 
@@ -121,20 +105,24 @@ void LCD_4_bit_Set_Cursor(u8 line, u8 col)
 {
     switch (line)
     {
-    case 1:
+    case 0:
         LCD_4_bit_send_command((LINE1 + col));
+        _delay_ms(1);
+        break;
+
+    case 1:
+        LCD_4_bit_send_command((LINE2 + col));
+        _delay_ms(1);
         break;
 
     case 2:
-        LCD_4_bit_send_command((LINE2 + col));
+        LCD_4_bit_send_command((LINE3 + col));
+        _delay_ms(1);
         break;
 
     case 3:
-        LCD_4_bit_send_command((LINE3 + col));
-        break;
-
-    case 4:
         LCD_4_bit_send_command((LINE4 + col));
+        _delay_ms(1);
         break;
 
     default:
@@ -159,16 +147,15 @@ void LCD_4_bit_Create_Custom_Char(u8 *dataArr, u8 mempos)
     LCD_4_bit_send_command(_LCD_DDRAM_START);
 }
 
-void LCD_4_bit_Write_int(u16 num)
+void LCD_4_bit_Write_int(u8 num)
 {
-    u16 arrTemp [6];
-    while (num != 0 )
+    u8 tempArr[7];
+    u8 i = 0;
+    atoi(num, tempArr);
+    while (tempArr[i])
     {
-         u8 temp = num%10;
-         LCD_4_bit_Write_Char(('0'+temp));
-         num /= 10;
+        LCD_4_bit_Write_Char(tempArr[i]);
     }
-    
 }
 #endif
 
@@ -319,3 +306,35 @@ void LCD_8_bit_Create_Custom_Char(u8 *dataArr, u8 mempos)
     }
 }
 #endif
+static inline void swap(u8 a, u8 b)
+{
+    a = a ^ b;
+    b = a ^ b;
+    a = a ^ b;
+}
+static void atoi(u8 number, u8 *arr)
+{
+
+    /* convert number into array */
+    memset((void *)arr, '\0', sizeof(u8));
+    while (number != 0)
+    {
+        *arr++ = '0' + (number % 10);
+        number /= 10;
+    }
+
+    /* reverse array */
+    u8 start = 0;
+    u8 end = 6;
+    while (arr[end] == '\0')
+    {
+        end--;
+    }
+
+    while ((start < end))
+    {
+        swap(arr[start], arr[end]);
+        start++;
+        end--;
+    }
+}

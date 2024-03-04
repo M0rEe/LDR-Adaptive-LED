@@ -8,24 +8,6 @@
 #include "ADC_interface.h"
 #include <stdio.h>
 
-/*
-u8 customChar[] = {
-    0B11100,
-    0B10100,
-    0B10100,
-    0B11100,
-    0B00000,
-    0B00000,
-    0B00000,
-    0B00000};
-*/
-/*
-void func(void)
-{
-  DIO_voidTogglePinValue(DIO_PORTA, PIN4);
-}
-*/
-
 u8 keypadMatrix[4][4] = {
 
     {'7', '8', '9', '/'},
@@ -34,7 +16,16 @@ u8 keypadMatrix[4][4] = {
     {'C', '0', '=', '+'}};
 
 u8 keyPressed = 0;
-
+u8 celsius[] = {
+  0B11100,
+  0B10100,
+  0B11100,
+  0B00000,
+  0B00000,
+  0B00000,
+  0B00000,
+  0B00000
+};
 int main(void)
 {
   DIO_INTI();
@@ -43,25 +34,9 @@ int main(void)
                ADC_preScaler_DIV_BY_128, ADC_INT_DISABLE);
   DIO_voidSetPinDirection(DIO_PORTD, PIN3, DIO_PIN_INPUT);
   DIO_voidSetPinDirection(DIO_PORTA, PIN4, DIO_PIN_OUTPUT);
-  u8 UPval = 1;
-  u8 DOWNval = 1;
+  LCD_4_bit_Create_Custom_Char(celsius,0);
+  LCD_4_bit_Write_String_At((u8 *)"KeyPressed: ", 0, 0);
 
-  u8 str[] = "KeyPressed: ";
-  LCD_4_bit_Write_String_At(str, 0, 0);
-
-  /*
-    u8 str[] = "-+Hello World+-";
-    LCD_4_bit_Create_Custom_Char(customChar, 0);
-    LCD_4_bit_Write_Char(0);
-    LCD_4_bit_Write_String_At(str, 1, 0);
-    LCD_4_bit_Write_String_At(str, 2, 0);
-    LCD_4_bit_Write_String_At(str, 3, 0);
-    LCD_4_bit_Write_Custom_Char(3, 8, 0);
-  */
-
-  // SET_GLOBAL_INTERRUPT();
-  // EXINT_voidSetCallBackINT1(func);
-  // EXINT_voidEnable(INT1_, FALLING_EDGE);
   while (1)
   {
     if (KEYPAD_u8GetChar(&keyPressed, (u8 *)keypadMatrix) != 0)
@@ -72,24 +47,16 @@ int main(void)
     else
     {
       u8 tempArr[6];
-      u16 Value = ADC_u16Read_Channel(ADC0_IDX,ADC_INTERNAL2_56,ADC_preScaler_DIV_BY_128);
-      sprintf((char*)tempArr,"%i",Value);
-      LCD_4_bit_Write_String_At((u8*)"LDR Value: ",2,0);
-      LCD_4_bit_Write_String_At(tempArr,3,0);
-    }
+      u16 Digital = ADC_u16Read_Channel(ADC1_IDX, ADC_AVCC, ADC_preScaler_DIV_BY_128);
+      
+      u16 Analog = (Digital * 5000UL) / 1024;
+      sprintf((char *)tempArr, "%i", (Analog/10));
 
-    if (DIO_PIN_LOW == UPval)
-    {
-    }
-    else
-    {
-    }
+      LCD_4_bit_Write_String_At((u8 *)"Temprature Value: ", 2, 0);
+      LCD_4_bit_Write_String_At(tempArr, 3, 0);
+      LCD_4_bit_Write_Custom_Char(3,4,0);
+      LCD_4_bit_Write_String_At((u8*)"C", 3, 5);
 
-    if (DIO_PIN_LOW == DOWNval)
-    {
-    }
-    else
-    {
     }
     _delay_ms(200);
   }

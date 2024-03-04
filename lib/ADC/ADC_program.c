@@ -6,6 +6,7 @@
 
 #define ADC_START_CONVERSION() (Set_Bit(ADCSRA, ADSC))
 #define ADC_READ_INTERRUPT_FLAG() (Get_Bit(ADCSRA, ADIF))
+#define ADC_CLEAR_INTERRUPT_FLAG() (Set_Bit(ADCSRA, ADIF))
 
 #define ADC_INTERRUPT_ENABLE() (Set_Bit(ADCSRA, ADIE))
 #define ADC_INTERRUPT_DISABLE() (Clr_Bit(ADCSRA, ADIE))
@@ -42,11 +43,13 @@ u16 ADC_u16Read_Channel(ADC_Channels_t copy_ADC_Channels_enum_Index,
                         ADC_Prescaller_t copy_Prescaler_enum_Index)
 {
     ADC_MODULE_DISABLE();
+    ADMUX &= 0x20; // setting channels to zero before selecting it to avoid overwriting
     ADMUX |= (copyVref_enum << REFS0);
     ADMUX |= (copy_ADC_Channels_enum_Index << MUX0);
     ADC_MODULE_ENABLE();
     ADC_START_CONVERSION();
     while (!ADC_READ_INTERRUPT_FLAG())
         ;
+    ADC_CLEAR_INTERRUPT_FLAG();
     return ADCHL_VALUE;
 }

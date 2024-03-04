@@ -351,16 +351,16 @@ void DIO_voidTogglePinValue(u8 copy_u8PortId, u8 copy_u8PinId)
     switch (copy_u8PortId)
     {
     case DIO_PORTA:
-        Set_Bit(PORTA, copy_u8PinId);
+        Tog_Bit(PORTA, copy_u8PinId);
         break;
     case DIO_PORTB:
-        Set_Bit(PORTB, copy_u8PinId);
+        Tog_Bit(PORTB, copy_u8PinId);
         break;
     case DIO_PORTC:
-        Set_Bit(PORTC, copy_u8PinId);
+        Tog_Bit(PORTC, copy_u8PinId);
         break;
     case DIO_PORTD:
-        Set_Bit(PORTD, copy_u8PinId);
+        Tog_Bit(PORTD, copy_u8PinId);
         break;
     }
 #endif

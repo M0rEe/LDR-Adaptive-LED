@@ -1,6 +1,6 @@
 #ifndef __STD_TYPES__
 #define __STD_TYPES__
-
+#define NULL (void *)0
 typedef unsigned char u8;
 typedef unsigned short int u16;
 typedef unsigned long int u32;

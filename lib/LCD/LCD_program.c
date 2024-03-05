@@ -4,11 +4,51 @@
 #include "string.h"
 
 #if LCD_4BIT == ENABLED
-static void LCD_4_BIT_Shift(u8);
-static void LCD_4_BIT_Pulse();
-static void atoi(u8 number, u8 *arr);
 
-static void LCD_4_BIT_Pulse(void)
+static void LCD_4_bit_voidShift(u8 copy_u8Data);
+static void LCD_4_bit_voidPulse(void);
+static void atoi(u16 copy_u16Number, u8 *copy_Char, u8 copy_u8ArraySize);
+
+#define swap(a, b) \
+    do             \
+    {              \
+        a = a ^ b; \
+        b = a ^ b; \
+        a = a ^ b; \
+    } while (0)
+
+static void atoi(u16 copy_u16Number, u8 *copy_pu8Char, u8 copy_u8ArraySize)
+{
+
+    /* convert number into array */
+    memset((char *)copy_pu8Char, '\0', copy_u8ArraySize);
+
+    u8 *tempPtr = copy_pu8Char;
+
+    while (copy_u16Number != 0)
+    {
+        *tempPtr++ = '0' + (copy_u16Number % 10);
+        copy_u16Number /= 10;
+    }
+
+    /* reverse array */
+    u8 start = 0;
+    u8 end = copy_u8ArraySize - 1;
+    // move end of array to first digit
+    while (copy_pu8Char[end] == '\0' && end > 0)
+    {
+        end--;
+    }
+    // swap array elemnts left to right
+    while (start < end)
+    {
+        swap(copy_pu8Char[start], copy_pu8Char[end]);
+        start++;
+        end--;
+    }
+}
+
+static void LCD_4_bit_voidPulse(void)
 {
     DIO_voidSetPinValue(LCD_4_BIT_EN_PORT, LCD_4_BIT_EN_PIN, DIO_PIN_HIGH); // Pulse Enable pin
     _delay_us(50);
@@ -16,7 +56,7 @@ static void LCD_4_BIT_Pulse(void)
     _delay_us(50);
 }
 
-static void LCD_4_BIT_Shift(u8 data)
+static void LCD_4_bit_voidShift(u8 data)
 {
     DIO_voidSetPinValue(LCD_4_BIT_D4_PORT, LCD_4_BIT_D4_PIN, ((data >> 0) & 0x01));
     DIO_voidSetPinValue(LCD_4_BIT_D5_PORT, LCD_4_BIT_D5_PIN, ((data >> 1) & 0x01));
@@ -24,148 +64,155 @@ static void LCD_4_BIT_Shift(u8 data)
     DIO_voidSetPinValue(LCD_4_BIT_D7_PORT, LCD_4_BIT_D7_PIN, ((data >> 3) & 0x01));
 }
 
-void LCD_4_bit_send_command(u8 cmd)
-{
-    LCD_4_BIT_Shift(cmd >> 4);                                             // write command to data pins
-    DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
-    DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
-    LCD_4_BIT_Pulse();
-
-    LCD_4_BIT_Shift(cmd);                                                  // write command to data pins
-    DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
-    DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
-    LCD_4_BIT_Pulse();
-}
-
-static void LCD_4_BIT_Send_DATA(u8 data)
+static void LCD_4_BIT_voidSendData(u8 data)
 {
 
-    LCD_4_BIT_Shift(data >> 4);                                             // write command to data pins
+    LCD_4_bit_voidShift(data >> 4);                                         // write command to data pins
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW);  // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_HIGH); // Select data Regsiter
-    LCD_4_BIT_Pulse();
+    LCD_4_bit_voidPulse();
 
-    LCD_4_BIT_Shift(data);                                                  // write command to data pins
+    LCD_4_bit_voidShift(data);                                              // write command to data pins
     DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW);  // select write operation
     DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_HIGH); // Select Instruction Regsiter
-    LCD_4_BIT_Pulse();
+    LCD_4_bit_voidPulse();
 }
 
-void LCD_4_bit_INIT(void)
+/**
+ * @return void
+ * @param : copy_u8Command      LCD Command
+ * @brief : Write given Command on LCD Datalines
+ */
+void LCD_4_bit_voidSendCommand(u8 copy_u8Command)
+{
+    LCD_4_bit_voidShift(copy_u8Command >> 4);                              // write command to data pins
+    DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
+    DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
+    LCD_4_bit_voidPulse();
+
+    LCD_4_bit_voidShift(copy_u8Command);                                   // write command to data pins
+    DIO_voidSetPinValue(LCD_4_BIT_RW_PORT, LCD_4_BIT_RW_PIN, DIO_PIN_LOW); // select write operation
+    DIO_voidSetPinValue(LCD_4_BIT_RS_PORT, LCD_4_BIT_RS_PIN, DIO_PIN_LOW); // Select Instruction Regsiter
+    LCD_4_bit_voidPulse();
+}
+
+/**
+ * @return void
+ * @brief : Initialize LCD
+ */
+void LCD_4_bit_voidInit(void)
 {
     // * pins already initialized
     _delay_ms(40);
-    /*
-    DB7 DB6 DB5 DB4
-    0   0   0   0
-    DB3 DB2 DB1 DB0
-    0   0   0   0
-    */
-   /*
-   *    Tested Sequence
-   */
-    LCD_4_bit_send_command(0x02);   //  Function set
-    LCD_4_bit_send_command(0x28);   //  Function set
+    LCD_4_bit_voidSendCommand(_LCD_RETURN_HOME);      //  Function set
+    LCD_4_bit_voidSendCommand(_LCD_4BIT_MODE_2_LINE); //  Function set
     _delay_us(1000);
-    LCD_4_bit_send_command(0x0D);   //  Display On / Control Off
+    LCD_4_bit_voidSendCommand(_LCD_DISPLAY_ON_UNDERLINE_OFF_CURSOR_ON); //  Display On / Control Off
     _delay_us(1000);
-    LCD_4_bit_send_command(0x01);   //  Clear Screen
+    LCD_4_bit_voidSendCommand(_LCD_CLEAR); //  Clear Screen
     _delay_us(2000);
-    LCD_4_bit_send_command(0x06);   //  Cursor On /blinking
+    LCD_4_bit_voidSendCommand(_LCD_ENTRY_MODE_INC_SHIFT_OFF); //  Cursor On /blinking
     _delay_us(1000);
-
-    /*
-        LCD_4_bit_send_command(0x02);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x28);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x0D);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x06);
-        _delay_ms(1);
-    */
-    /*
-        _delay_ms(20);
-        LCD_4_bit_send_command(0x02);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x02);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x02);
-        _delay_ms(5);
-        LCD_4_bit_send_command(0x28);
-        _delay_ms(2);
-        LCD_4_bit_send_command(0x0D);
-        _delay_ms(2);
-        LCD_4_bit_send_command(0x01);
-        _delay_ms(2);
-        LCD_4_bit_send_command(0x06);
-        _delay_ms(2);
-        LCD_4_bit_send_command(0x02);
-        _delay_ms(2);
-    */
 }
 
-void LCD_4_bit_Write_Char(u8 ch)
+/**
+ * @return void
+ * @param : copy_u8Command      LCD Command
+ * @brief : Write given Command on LCD Datalines
+ */
+void LCD_4_bit_voidWriteChar(u8 copy_u8Char)
 {
-    LCD_4_BIT_Send_DATA(ch);
+    LCD_4_BIT_voidSendData(copy_u8Char);
 }
 
-void LCD_4_bit_Write_String_At(u8 *ptr, u8 line, u8 col)
+/**
+ * @return void
+ * @param : copy_pu8Char        String To be printed on LCD
+ * @param : copy_u8Line         Line Index of LCD
+ * @param : copy_u8Col          Column Index of LCD
+ * @brief : Write given String on LCD at line,column
+ */
+void LCD_4_bit_voidWriteStringAt(u8 *copy_pu8Char, u8 copy_u8Line, u8 copy_u8Col)
 {
-    LCD_4_bit_Set_Cursor(line, col);
+    LCD_4_bit_voidSetCursor(copy_u8Line, copy_u8Col);
     _delay_ms(1);
-    while (*ptr)
+    while (*copy_pu8Char)
     {
-        LCD_4_bit_Write_Char(*ptr++);
+        LCD_4_bit_voidWriteChar(*copy_pu8Char++);
     }
 }
 
-void LCD_4_bit_Set_Cursor(u8 line, u8 col)
+/**
+ * @return void
+ * @param : copy_u8Line         Line Index of LCD
+ * @param : copy_u8Col          Column Index of LCD
+ * @brief : Sets Cursour at given line column
+ */
+void LCD_4_bit_voidSetCursor(u8 copy_u8Line, u8 copy_u8Col)
 {
-    switch (line)
+    switch (copy_u8Line)
     {
     case 0:
-        LCD_4_bit_send_command((LINE1 + col));
+        LCD_4_bit_voidSendCommand((LINE1 + copy_u8Col));
         break;
 
     case 1:
-        LCD_4_bit_send_command((LINE2 + col));
+        LCD_4_bit_voidSendCommand((LINE2 + copy_u8Col));
         break;
 
     case 2:
-        LCD_4_bit_send_command((LINE3 + col));
+        LCD_4_bit_voidSendCommand((LINE3 + copy_u8Col));
         break;
 
     case 3:
-        LCD_4_bit_send_command((LINE4 + col));
+        LCD_4_bit_voidSendCommand((LINE4 + copy_u8Col));
         break;
     }
 }
 
-void LCD_4_bit_Write_Custom_Char(u8 line, u8 col, u8 mempos)
+/**
+ * @return void
+ * @param : copy_u8Line         Line Index of LCD
+ * @param : copy_u8Col          Column Index of LCD
+ * @param : copy_u8Mempos       DDRAM Position
+ * @brief : Write given Memory position on LCD
+ */
+void LCD_4_bit_voidWriteCustomChar(u8 copy_u8Line, u8 copy_u8Col, u8 copy_u8Mempos)
 {
-    LCD_4_bit_Set_Cursor(line, col);
+    LCD_4_bit_voidSetCursor(copy_u8Line, copy_u8Col);
     _delay_us(10);
-    LCD_4_bit_Write_Char(mempos);
+    LCD_4_bit_voidWriteChar(copy_u8Mempos);
 }
 
-void LCD_4_bit_Create_Custom_Char(u8 *dataArr, u8 mempos)
+/**
+ * @return void
+ * @param : copy_pu8Char        Pointer to String
+ * @param : copy_u8Mempos       DDRAM Position
+ * @brief : Write given Character on CGRAM
+ */
+void LCD_4_bit_voidCreateCustomChar(u8 *copy_pu8Char, u8 copy_u8Mempos)
 {
-    LCD_4_bit_send_command((_LCD_CGRAM_START + (mempos * 8)));
+    LCD_4_bit_voidSendCommand((_LCD_CGRAM_START + (copy_u8Mempos * 8)));
     for (u8 i = 0; i < 8; i++)
     {
-        LCD_4_BIT_Send_DATA(dataArr[i]);
+        LCD_4_BIT_voidSendData(copy_pu8Char[i]);
     }
 }
 
-void LCD_4_bit_Write_int(u8 num)
+/**
+ * @return void
+ * @param : copy_u8Number       Integer number
+ * @brief : Write number to LCD
+ */
+void LCD_4_bit_voidWriteInt(u16 copy_u16Number)
 {
     u8 tempArr[7];
     u8 i = 0;
-    atoi(num, tempArr);
-    while (tempArr[i])
+    atoi(copy_u16Number, tempArr, 7);
+    while (tempArr[i] != '\0')
     {
-        LCD_4_bit_Write_Char(tempArr[i]);
+        LCD_4_bit_voidWriteChar(tempArr[i]);
+        i++;
     }
 }
 #endif
@@ -317,35 +364,3 @@ void LCD_8_bit_Create_Custom_Char(u8 *dataArr, u8 mempos)
     }
 }
 #endif
-static inline void swap(u8 a, u8 b)
-{
-    a = a ^ b;
-    b = a ^ b;
-    a = a ^ b;
-}
-static void atoi(u8 number, u8 *arr)
-{
-
-    /* convert number into array */
-    memset((void *)arr, '\0', sizeof(u8));
-    while (number != 0)
-    {
-        *arr++ = '0' + (number % 10);
-        number /= 10;
-    }
-
-    /* reverse array */
-    u8 start = 0;
-    u8 end = 6;
-    while (arr[end] == '\0')
-    {
-        end--;
-    }
-
-    while ((start < end))
-    {
-        swap(arr[start], arr[end]);
-        start++;
-        end--;
-    }
-}

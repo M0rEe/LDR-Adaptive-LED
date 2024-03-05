@@ -6,6 +6,12 @@ static int rowPorts[MAX_ROW_SIZE] = {ROW1_PORT, ROW2_PORT, ROW3_PORT, ROW4_PORT}
 static int colPins[MAX_COL_SIZE] = {COL1_PIN, COL2_PIN, COL3_PIN, COL4_PIN};
 static int colPorts[MAX_COL_SIZE] = {COL1_PORT, COL2_PORT, COL3_PORT, COL4_PORT};
 
+/**
+ * @return u8
+ * @param : copy_pu8CharPressed         KeyPad Keyp Pressed
+ * @param : copy_pu8KeypadMatrix        KeyPad Matrix
+ * @brief : Returns Value from given matrix ampped to keypressed
+ */
 u8 KEYPAD_u8GetChar(u8 *copy_pu8CharPressed, u8 *copy_pu8KeypadMatrix)
 {
     // *Keypad Pins already initialized through DIO_INIT

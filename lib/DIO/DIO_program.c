@@ -9,7 +9,12 @@
 #define DISABLED 0
 
 #define ERR_DETECTION DISABLED
-void DIO_INTI(void)
+
+/**
+ * @return void
+ * @brief : Initialize all MCU Pins As defined in config file
+ */
+void DIO_voidInitPins(void)
 {
     DDRA = PORTA_DIR;
     DDRB = PORTB_DIR;
@@ -25,9 +30,8 @@ void DIO_INTI(void)
     PORTB = PORTB_VALUE;
     PORTC = PORTC_VALUE;
     PORTD = PORTD_VALUE;
-
-
 }
+
 /**
  * @return void
  * @param : copy_u8PortId       Port ID
@@ -448,6 +452,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         {
             DDRA = DIO_PORT_OUTPUT;
         }
+        else
+        {
+            DDRA = copy_u8PortDirection;
+        }
         break;
     case DIO_PORTB:
         if (DIO_PORT_INPUT == copy_u8PortDirection)
@@ -457,6 +465,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         else if (DIO_PORT_OUTPUT == copy_u8PortDirection)
         {
             DDRB = DIO_PORT_OUTPUT;
+        }
+        else
+        {
+            DDRB = copy_u8PortDirection;
         }
         break;
     case DIO_PORTC:
@@ -468,6 +480,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         {
             DDRC = DIO_PORT_OUTPUT;
         }
+        else
+        {
+            DDRC = copy_u8PortDirection;
+        }
         break;
     case DIO_PORTD:
         if (DIO_PORT_INPUT == copy_u8PortDirection)
@@ -477,6 +493,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         else if (DIO_PORT_OUTPUT == copy_u8PortDirection)
         {
             DDRD = DIO_PORT_OUTPUT;
+        }
+        else
+        {
+            DDRD = copy_u8PortDirection;
         }
         break;
     default:
@@ -495,6 +515,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         {
             DDRA = DIO_PORT_OUTPUT;
         }
+        else
+        {
+            DDRA = copy_u8PortDirection;
+        }
         break;
     case DIO_PORTB:
         if (DIO_PORT_INPUT == copy_u8PortDirection)
@@ -504,6 +528,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         else if (DIO_PORT_OUTPUT == copy_u8PortDirection)
         {
             DDRB = DIO_PORT_OUTPUT;
+        }
+        else
+        {
+            DDRB = copy_u8PortDirection;
         }
         break;
     case DIO_PORTC:
@@ -515,6 +543,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         {
             DDRC = DIO_PORT_OUTPUT;
         }
+        else
+        {
+            DDRC = copy_u8PortDirection;
+        }
         break;
     case DIO_PORTD:
         if (DIO_PORT_INPUT == copy_u8PortDirection)
@@ -524,6 +556,10 @@ void DIO_voidSetPortDirection(u8 copy_u8PortId, u8 copy_u8PortDirection)
         else if (DIO_PORT_OUTPUT == copy_u8PortDirection)
         {
             DDRD = DIO_PORT_OUTPUT;
+        }
+        else
+        {
+            DDRD = copy_u8PortDirection;
         }
         break;
     }

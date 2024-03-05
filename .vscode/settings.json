@@ -4,7 +4,8 @@
         "std_types.h": "c",
         "ecu_lcd.h": "c",
         "keypad_interface.h": "c",
-        "keypad_config.h": "c"
+        "keypad_config.h": "c",
+        "int_interface.h": "c"
     },
     "cmake.configureOnOpen": false,
     "editor.fontSize": 16

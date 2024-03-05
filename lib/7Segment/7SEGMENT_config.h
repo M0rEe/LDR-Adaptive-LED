@@ -1,8 +1,13 @@
 #ifndef __7SEGMENT_CONFIG__
 #define __7SEGMENT_CONFIG__
+
 #include "DIO_interface.h"
+
+
 #define ENABLED 1
 #define DISABLED 0
+
+#define NUMBER_OF_SSDS  4
 
 #define BCD ENABLED
 

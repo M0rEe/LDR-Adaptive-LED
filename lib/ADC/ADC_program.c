@@ -13,6 +13,16 @@
 
 #define ADCHL_VALUE (*(volatile u16 *)0x24);
 
+/**
+ * @return void
+ * @param : copyVref_enum                       voltage Referrence
+ * @param : copy_u8LftAdjust                    Left Adjust
+ * @param : copy_ADC_Channels_enm_Index         Index Of channel
+ * @param : copy_ADC_Autotrig_enum_state        ADC Auto Trigger
+ * @param : copy_Prescaler_enum_Index           Pre-Scaller value
+ * @param : copy_u8Intterrupt_state             Interrupt Enable/Disable
+ * @brief : Initialize ADC module with given arguments
+ */
 void ADC_voidInit(ADC_VRef_t copyVref_enum,
                   u8 copy_u8LftAdjust, ADC_Channels_t copy_ADC_Channels_enm_Index,
                   ADC_Auto_Trigger_Src_t copy_ADC_Autotrig_enum_state,
@@ -38,6 +48,13 @@ void ADC_voidInit(ADC_VRef_t copyVref_enum,
 }
 
 // Blocking
+/**
+ * @return 16
+ * @param : copyVref_enum                       voltage Referrence
+ * @param : copy_ADC_Channels_enum_Index         Index Of channel
+ * @param : copy_Prescaler_enum_Index           Pre-Scaller value
+ * @brief : Modify ADC Module then Reading Given Channel  
+ */
 u16 ADC_u16Read_Channel(ADC_Channels_t copy_ADC_Channels_enum_Index,
                         ADC_VRef_t copyVref_enum,
                         ADC_Prescaller_t copy_Prescaler_enum_Index)
@@ -48,8 +65,7 @@ u16 ADC_u16Read_Channel(ADC_Channels_t copy_ADC_Channels_enum_Index,
     ADMUX |= (copy_ADC_Channels_enum_Index << MUX0);
     ADC_MODULE_ENABLE();
     ADC_START_CONVERSION();
-    while (!ADC_READ_INTERRUPT_FLAG())
-        ;
+    while (!ADC_READ_INTERRUPT_FLAG());
     ADC_CLEAR_INTERRUPT_FLAG();
     return ADCHL_VALUE;
 }

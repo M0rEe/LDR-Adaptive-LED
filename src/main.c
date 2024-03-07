@@ -6,57 +6,29 @@
 #include "INT_interface.h"
 #include "KEYPAD_interface.h"
 #include "ADC_interface.h"
-#include <stdio.h>
+#include "SPI_interface.h"
 
-u8 keypadMatrix[4][4] = {
-
-    {'7', '8', '9', '/'},
-    {'4', '5', '6', '*'},
-    {'1', '2', '3', '-'},
-    {'C', '0', '=', '+'}};
-
-u8 keyPressed = 0;
-
-u8 celsius[] = { // celsius sympol
-    0B11100,
-    0B10100,
-    0B11100,
-    0B00000,
-    0B00000,
-    0B00000,
-    0B00000,
-    0B00000};
+#define SPI_GET_INTERRUPT_FLAG() (Get_Bit(SPSR, SPIF))
+#define SPI_GET_COLLISION_FLAG() (Get_Bit(SPSR, WCOL))
 
 int main(void)
 {
   DIO_voidInitPins();
-  LCD_4_bit_voidInit();
-  ADC_voidInit(ADC_INTERNAL2_56, ADC_RIGHT_ADJUST, ADC0_IDX, AUTO_TRIG_DISABLE,
-               ADC_preScaler_DIV_BY_128, ADC_INT_DISABLE);
 
-  LCD_4_bit_voidCreateCustomChar(celsius, 0);
-  LCD_4_bit_voidWriteStringAt((u8 *)"KeyPressed: ", 0, 0);
-  LCD_4_bit_voidWriteInt(156);
+  SPI_voidInit(SPI_MASTER_MODE,
+               SPI_F_osc_div_by64);
+
+  u8 Recv = 55;
+  DIO_voidSetPinValue(DIO_PORTB, DIO_PIN4, DIO_PIN_LOW);
   while (1)
   {
-    if (KEYPAD_u8GetChar(&keyPressed, (u8 *)keypadMatrix) != 0)
+    // master
+    SPI_voidSendRecv(55, &Recv);
+    if (Recv == 35)
     {
-      LCD_4_bit_voidSetCursor(1, 0);
-      LCD_4_bit_voidWriteChar(keyPressed);
+      DIO_voidTogglePinValue(DIO_PORTA, DIO_PIN5);
     }
-    else
-    {
-      u16 Digital = ADC_u16Read_Channel(ADC1_IDX, ADC_AVCC, ADC_preScaler_DIV_BY_128);
-
-      u16 Analog = (Digital * 5000UL) / 1024;
-      LCD_4_bit_voidWriteStringAt((u8 *)"Temprature Value: ", 2, 0);
-      LCD_4_bit_voidWriteStringAt((u8 *)"     ", 3, 0);
-      LCD_4_bit_voidSetCursor(3, 0);
-      LCD_4_bit_voidWriteInt(Analog / 10);
-      LCD_4_bit_voidWriteCustomChar(3, 4, 0);
-      LCD_4_bit_voidWriteStringAt((u8 *)"C", 3, 5);
-    }
-    _delay_ms(200);
+    _delay_ms(250);
   }
 
   return 0;

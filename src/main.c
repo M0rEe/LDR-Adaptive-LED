@@ -8,26 +8,36 @@
 #include "ADC_interface.h"
 #include "SPI_interface.h"
 
-#define SPI_GET_INTERRUPT_FLAG() (Get_Bit(SPSR, SPIF))
-#define SPI_GET_COLLISION_FLAG() (Get_Bit(SPSR, WCOL))
+void ReadData(u8 Data)
+{
+  if (Data == 35)
+  {
+    DIO_voidTogglePinValue(DIO_PORTA, DIO_PIN5);
+  }
+  else
+  {
+  }
+}
 
 int main(void)
 {
   DIO_voidInitPins();
-
+  // Initialize Master
   SPI_voidInit(SPI_MASTER_MODE,
-               SPI_F_osc_div_by64);
+               SPI_F_osc_div_by128);
+  SET_GLOBAL_INTERRUPT();
 
-  u8 Recv = 55;
-  DIO_voidSetPinValue(DIO_PORTB, DIO_PIN4, DIO_PIN_LOW);
+  u8 Recv = 0;
   while (1)
   {
-    // master
-    SPI_voidSendRecv(55, &Recv);
-    if (Recv == 35)
-    {
-      DIO_voidTogglePinValue(DIO_PORTA, DIO_PIN5);
-    }
+    // Master Code
+    // SPI_voidSendRecv(55, &Recv);
+    SPI_voidSendNoNBlocking(55, ReadData);
+    // if (Recv == 35)
+    //{
+    DIO_voidTogglePinValue(DIO_PORTD, DIO_PIN5);
+    //}
+
     _delay_ms(250);
   }
 

@@ -34,7 +34,7 @@
 #define COL1_PIN    DIO_PIN7
 #define COL2_PIN    DIO_PIN6
 #define COL3_PIN    DIO_PIN5
-#define COL4_PIN    DIO_PIN3
+#define COL4_PIN    DIO_PIN4
 
 #endif
 
